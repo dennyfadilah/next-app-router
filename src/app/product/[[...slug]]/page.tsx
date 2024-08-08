@@ -6,7 +6,11 @@ type ProductPageProps = { params: { slug: string } };
 async function getData() {
 	// const res = await fetch("https://fakestoreapi.com/products");
 	const res = await fetch("http://localhost:3000/api/product", {
-		cache: "no-store",
+		cache: "force-cache",
+		next: {
+      tags: ["products"],
+			// revalidate: 30,
+		},
 	});
 
 	if (!res.ok) {
@@ -25,12 +29,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 				{params.slug ? "Detail Product Page" : "Product Page"}
 			</h1>
 
-			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 place-items-center">
+			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 place-items-center my-8">
 				{products.data.length > 0 &&
 					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 					products.data.map((product: any) => (
 						<div
-							className="relative m-8 w-full max-w-xs overflow-hidden rounded-lg bg-white shadow-md"
+							className="relative  w-full max-w-xs overflow-hidden rounded-lg bg-white shadow-md"
 							key={product.id}
 						>
 							<Link href="#" className="flex justify-center items-center h-60">
