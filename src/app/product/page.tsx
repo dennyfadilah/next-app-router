@@ -1,32 +1,10 @@
+import { getData } from "@/services/products";
 import Image from "next/image";
 import Link from "next/link";
 
 type ProductPageProps = { params: { slug: string } };
-
-async function getData() {
-	const res = await fetch("https://fakestoreapi.com/products", {
-		cache: "no-store",
-	});
-
-	// const res = await fetch("http://localhost:3000/api/product", {
-	// 	cache: "force-cache", // "no-cache", "no-store", "reload", "force-cache", "only-if-cached"
-	// 	next: {
-	// 		tags: ["products"],
-	// 		// revalidate: 30,
-	// 	},
-	// });
-
-	if (!res.ok) {
-		throw new Error("Failed to fetch data");
-	}
-
-	// console.log(res);
-
-	return res.json();
-}
-
 export default async function ProductPage({ params }: ProductPageProps) {
-	const products = await getData();
+	const products = await getData("http://localhost:3000/api/product");
 	// console.log(products);
 	return (
 		<div className="p-5">
@@ -42,7 +20,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 							className="relative  w-full max-w-xs overflow-hidden rounded-lg bg-white shadow-md"
 							key={product.id}
 						>
-							<Link href="#" className="flex justify-center items-center h-60">
+							<Link
+								href={`/product/detail/${product.id}`}
+								className="flex justify-center items-center h-60"
+							>
 								<Image
 									className="object-contain w-full h-60"
 									src={product.image}
@@ -57,7 +38,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 							</span>
 
 							<div className="mt-4 px-5 pb-5">
-								<Link href="#">
+								<Link href={`/product/detail/${product.id}`}>
 									<h5 className="text-xl font-semibold tracking-tight text-slate-900 truncate pb-5">
 										{product.title}
 									</h5>
