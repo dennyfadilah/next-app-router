@@ -4,18 +4,23 @@ import Link from "next/link";
 type ProductPageProps = { params: { slug: string } };
 
 async function getData() {
-	// const res = await fetch("https://fakestoreapi.com/products");
-	const res = await fetch("http://localhost:3000/api/product", {
-		cache: "force-cache",
-		next: {
-      tags: ["products"],
-			// revalidate: 30,
-		},
+	const res = await fetch("https://fakestoreapi.com/products", {
+		cache: "no-store",
 	});
+
+	// const res = await fetch("http://localhost:3000/api/product", {
+	// 	cache: "force-cache", // "no-cache", "no-store", "reload", "force-cache", "only-if-cached"
+	// 	next: {
+	// 		tags: ["products"],
+	// 		// revalidate: 30,
+	// 	},
+	// });
 
 	if (!res.ok) {
 		throw new Error("Failed to fetch data");
 	}
+
+	// console.log(res);
 
 	return res.json();
 }
@@ -30,16 +35,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
 			</h1>
 
 			<div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 place-items-center my-8">
-				{products.data.length > 0 &&
+				{(products.data?.length ?? products.length) > 0 &&
 					// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-					products.data.map((product: any) => (
+					(products.data ?? products).map((product: any) => (
 						<div
 							className="relative  w-full max-w-xs overflow-hidden rounded-lg bg-white shadow-md"
 							key={product.id}
 						>
 							<Link href="#" className="flex justify-center items-center h-60">
 								<Image
-									className="object-cover w-full h-60"
+									className="object-contain w-full h-60"
 									src={product.image}
 									alt={product.title}
 									width={150}
@@ -103,14 +108,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
 						</div>
 					))}
 			</div>
-
-			{params.slug && (
-				<div>
-					<h2>Category: {params.slug[0]}</h2>
-					<h2>Gender: {params.slug[1]}</h2>
-					<h2>Id: {params.slug[2]}</h2>
-				</div>
-			)}
 		</div>
 	);
 }
