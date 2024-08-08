@@ -24,17 +24,15 @@ export default function AdminProductPage() {
 		}
 	};
 	return (
-		<>
-			<div className="flex flex-col place-items-center mt-10 ">
-				<h1>{status}</h1>
-				<button
-					type="button"
-					onClick={() => revalidate()}
-					className="bg-blue-500 hover:bg-blue-700 w-40 text-white font-bold py-2 px-4 rounded"
-				>
-					Revalidate
-				</button>
-			</div>
-		</>
+		<div className="w-3/6 h-96 bg-gray-300 rounded-[12px] flex justify-center items-center mr-5">
+			<h1>{status}</h1>
+			<button
+				type="button"
+				onClick={() => revalidate()}
+				className="bg-blue-500 hover:bg-blue-700 w-40 text-white font-bold py-2 px-4 rounded"
+			>
+				Revalidate
+			</button>
+		</div>
 	);
 }
