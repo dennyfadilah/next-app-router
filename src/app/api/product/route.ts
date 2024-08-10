@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { retrieveData, retrieveDataById } from "@/lib/firebase/service";
 
 const data = [
 	{
@@ -22,20 +23,6 @@ const data = [
 		image:
 			"https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/86991b52-33a2-4e41-aace-c05510832f84/air-jordan-1-low-shoes-6Q1tFM.png",
 	},
-	{
-		id: 4,
-		title: "Air Jordan 1 Low",
-		price: 1729000,
-		image:
-			"https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/86991b52-33a2-4e41-aace-c05510832f84/air-jordan-1-low-shoes-6Q1tFM.png",
-	},
-	{
-		id: 5,
-		title: "Air Jordan 1 Low",
-		price: 1729000,
-		image:
-			"https://static.nike.com/a/images/c_limit,w_592,f_auto/t_product_v1/u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/86991b52-33a2-4e41-aace-c05510832f84/air-jordan-1-low-shoes-6Q1tFM.png",
-	},
 ];
 
 export async function GET(request: NextRequest) {
@@ -43,7 +30,7 @@ export async function GET(request: NextRequest) {
 	const id = searchParams.get("id");
 
 	if (id) {
-		const detailProduct = data.find((item) => item.id === Number(id));
+		const detailProduct = await retrieveDataById("products", id);
 
 		if (detailProduct) {
 			return NextResponse.json({
@@ -55,5 +42,8 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json({ status: 404, message: "Not Found", data: {} });
 	}
 
-	return NextResponse.json({ status: 200, message: "Success", data });
+	const products = await retrieveData("products");
+	console.log(products);
+
+	return NextResponse.json({ status: 200, message: "Success", data: products });
 }

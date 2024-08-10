@@ -1,18 +1,44 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
+	const { push } = useRouter();
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
+
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const handleLogin = (e: any) => {
+	const handleLogin = async (e: any) => {
 		e.preventDefault();
-		fetch("/api/auth/login", {
-			method: "POST",
-			body: JSON.stringify({
-				email: e.currentTarget.email.value,
-				password: e.currentTarget.password.value,
-			}),
-		});
+
+		setError("");
+		setIsLoading(true);
+
+		try {
+			const res = await signIn("credentials", {
+				redirect: false,
+				email: e.target.email.value,
+				password: e.target.password.value,
+				callbackUrl: "/dashboard",
+			});
+
+			if (!res?.error) {
+				push("/dashboard");
+				e.target.reset();
+				setIsLoading(false);
+			} else {
+				setIsLoading(false);
+				if (res.status === 401) {
+					setError("Invalid email or password");
+				}
+			}
+		} catch (err) {
+			setIsLoading(false);
+			console.log(err);
+		}
 	};
 
 	return (
@@ -30,6 +56,15 @@ export default function LoginPage() {
 						</div>
 
 						<div className="m-7">
+							{error && (
+								<div
+									className="w-full p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+									role="alert"
+								>
+									<span className="font-medium">Error! </span>
+									{error}
+								</div>
+							)}
 							<form onSubmit={(e) => handleLogin(e)}>
 								<div className="mb-6">
 									<label
@@ -74,9 +109,10 @@ export default function LoginPage() {
 								<div className="mb-6">
 									<button
 										type="submit"
+										disabled={isLoading}
 										className="w-full px-3 py-4 text-white bg-indigo-500 rounded-md focus:bg-indigo-600 focus:outline-none"
 									>
-										Sign in
+										{isLoading ? "Loading..." : "Sign in"}
 									</button>
 								</div>
 
